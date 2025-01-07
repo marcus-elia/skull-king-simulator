@@ -3,6 +3,8 @@
 import unittest
 
 from card import *
+from deck import *
+
 
 class TestCards(unittest.TestCase):
     def test_suit_card_defeats(self):
@@ -97,6 +99,22 @@ class TestCards(unittest.TestCase):
         self.assertFalse(tigress.defeats(PirateCard(), Suit.TreasureMap))
         self.assertFalse(tigress.defeats(EscapeCard(), Suit.TreasureMap))
         self.assertFalse(tigress.defeats(SkullKingCard(), Suit.TreasureMap))
+
+class TestDeck(unittest.TestCase):
+    def test_deck_size(self):
+        deck = Deck()
+        self.assertEqual(len(deck.cards), DECK_SIZE)
+
+    def test_shuffle(self):
+        deck = Deck()
+        unshuffled = list(deck.cards)
+        deck.shuffle()
+        num_same = 0
+        for i in range(DECK_SIZE):
+            if unshuffled[i] == deck.cards[i]:
+                num_same += 1
+        MAX_SHUFFLE_SIMILARITY = 0.10
+        self.assertLess(num_same / DECK_SIZE, MAX_SHUFFLE_SIMILARITY)
 
 if __name__ == '__main__':
     unittest.main()

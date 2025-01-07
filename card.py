@@ -11,19 +11,27 @@ class CardCategory(Enum):
     Tigress = 5
     Escape = 6
 
+SUIT_TO_COLOR = {"JollyRoger": "Black", "Parrot": "Green", "TreasureMap": "Purple", "TreasureChest": "Yellow"}
+
 class Suit(Enum):
     JollyRoger = 1
     Parrot = 2
     TreasureMap = 3
     TreasureChest = 4
 
+    def __str__(self):
+        return SUIT_TO_COLOR[self.name]
+
 class TigressMode(Enum):
     Pirate = 1
     Escape = 2
 
 class Card(ABC):
+    current_id_number = 1
     def __init__(self, card_category):
         self.card_category = card_category
+        self.id_number = Card.current_id_number
+        Card.current_id_number += 1
 
     @abstractmethod
     def defeats_suit_card(self, other_card, trump_suit):
@@ -62,6 +70,13 @@ class Card(ABC):
             return self.defeats_tigress(other_card)
         else:
             return self.defeats_escape()
+
+    def __eq__(self, other):
+        return self.card_category == other.card_category and self.id_number == other.id_number
+
+    @abstractmethod
+    def __str__(self):
+        pass
 
 class SuitCard(Card):
     def __init__(self, suit, number):
@@ -102,6 +117,9 @@ class SuitCard(Card):
     def defeats_escape(self):
         return True
 
+    def __str__(self):
+        return str(self.suit) + " " + str(self.number)
+
 class PirateCard(Card):
     def __init__(self):
         super().__init__(CardCategory.Pirate)
@@ -123,6 +141,9 @@ class PirateCard(Card):
 
     def defeats_escape(self):
         return True
+
+    def __str__(self):
+        return "Pirate"
 
 class MermaidCard(Card):
     def __init__(self):
@@ -146,6 +167,9 @@ class MermaidCard(Card):
     def defeats_escape(self):
         return True
 
+    def __str__(self):
+        return "Mermaid"
+
 class SkullKingCard(Card):
     def __init__(self):
         super().__init__(CardCategory.SkullKing)
@@ -167,6 +191,9 @@ class SkullKingCard(Card):
 
     def defeats_escape(self):
         return True
+
+    def __str__(self):
+        return "The Skull King"
 
 class TigressCard(Card):
     def __init__(self):
@@ -194,6 +221,9 @@ class TigressCard(Card):
     def defeats_escape(self):
         return self.tigress_mode == TigressMode.Pirate
 
+    def __str__(self):
+        return "Tigress"
+
 class EscapeCard(Card):
     def __init__(self):
         super().__init__(CardCategory.Escape)
@@ -215,3 +245,6 @@ class EscapeCard(Card):
 
     def defeats_escape(self):
         return False
+
+    def __str__(self):
+        return "Escape"
