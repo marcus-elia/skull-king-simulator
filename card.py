@@ -72,7 +72,7 @@ class Card(ABC):
             return self.defeats_escape()
 
     def __eq__(self, other):
-        return self.card_category == other.card_category and self.id_number == other.id_number
+        return self.id_number == other.id_number
 
     @abstractmethod
     def __str__(self):

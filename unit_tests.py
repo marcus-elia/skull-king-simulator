@@ -116,5 +116,44 @@ class TestDeck(unittest.TestCase):
         MAX_SHUFFLE_SIMILARITY = 0.10
         self.assertLess(num_same / DECK_SIZE, MAX_SHUFFLE_SIMILARITY)
 
+    def test_choose_num_cards(self):
+        self.assertEqual(choose_num_cards(4, 2, 100), 2)
+        self.assertEqual(choose_num_cards(4, 25, 100), 25)
+        self.assertEqual(choose_num_cards(4, 26, 100), 25)
+        self.assertEqual(choose_num_cards(8, 10, 70), 8)
+
+    def test_deal(self):
+        deck = Deck(shuffle=True)
+        # Using all the cards
+        NUM_PLAYERS = 7
+        ROUND_NUMBER = 10
+        hands = deck.deal(NUM_PLAYERS, ROUND_NUMBER)
+        self.assertEqual(len(hands), NUM_PLAYERS)
+        for i in range(NUM_PLAYERS):
+            self.assertEqual(len(hands[i]), ROUND_NUMBER)
+            for j in range(ROUND_NUMBER):
+                self.assertEqual(deck.cards[j * NUM_PLAYERS + i], hands[i][j])
+        # There are extra cards
+        NUM_PLAYERS = 7
+        ROUND_NUMBER = 3
+        hands = deck.deal(NUM_PLAYERS, ROUND_NUMBER)
+        self.assertEqual(len(hands), NUM_PLAYERS)
+        for i in range(NUM_PLAYERS):
+            self.assertEqual(len(hands[i]), ROUND_NUMBER)
+            for j in range(ROUND_NUMBER):
+                self.assertEqual(deck.cards[j * NUM_PLAYERS + i], hands[i][j])
+
+        # Not enough cards
+        NUM_PLAYERS = 8
+        ROUND_NUMBER = 10
+        num_cards = choose_num_cards(NUM_PLAYERS, ROUND_NUMBER, DECK_SIZE)
+        self.assertNotEqual(ROUND_NUMBER, num_cards)
+        hands = deck.deal(NUM_PLAYERS, ROUND_NUMBER)
+        self.assertEqual(len(hands), NUM_PLAYERS)
+        for i in range(NUM_PLAYERS):
+            self.assertEqual(len(hands[i]), num_cards)
+            for j in range(num_cards):
+                self.assertEqual(deck.cards[j * NUM_PLAYERS + i], hands[i][j])
+
 if __name__ == '__main__':
     unittest.main()
