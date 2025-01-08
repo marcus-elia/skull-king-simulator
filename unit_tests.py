@@ -4,7 +4,7 @@ import unittest
 
 from card import *
 from deck import *
-
+from player import *
 
 class TestCards(unittest.TestCase):
     def test_suit_card_defeats(self):
@@ -154,6 +154,24 @@ class TestDeck(unittest.TestCase):
             self.assertEqual(len(hands[i]), num_cards)
             for j in range(num_cards):
                 self.assertEqual(deck.cards[j * NUM_PLAYERS + i], hands[i][j])
+
+class TestPlayer(unittest.TestCase):
+    def test_make_bid(self):
+        player = Player()
+        # Round one with a non-winning card
+        player.get_hand([SuitCard(Suit.Parrot, 12)])
+        self.assertEqual(player.make_bid(4, 1), 0)
+        # Round one with a winning card
+        player.get_hand([PirateCard()])
+        self.assertEqual(player.make_bid(4, 1), 1)
+        # Round 8 with 3 winners and 5 losers
+        player.get_hand([PirateCard(), SkullKingCard(), MermaidCard(),\
+                EscapeCard(), EscapeCard(), SuitCard(Suit.Parrot, 5), EscapeCard(), SuitCard(Suit.TreasureMap, 2)])
+        self.assertEqual(player.make_bid(4, 8), 3)
+        # Round 8 with 1 winner and 3 maybes
+        player.get_hand([SkullKingCard(), SuitCard(Suit.JollyRoger, 12), SuitCard(Suit.JollyRoger, 3), TigressCard(),\
+                EscapeCard(), EscapeCard(), SuitCard(Suit.Parrot, 5), EscapeCard()])
+        self.assertEqual(player.make_bid(4, 8), 3)
 
 if __name__ == '__main__':
     unittest.main()
