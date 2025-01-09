@@ -5,6 +5,7 @@ import unittest
 from card import *
 from deck import *
 from player import *
+from trick import *
 
 class TestCards(unittest.TestCase):
     def test_suit_card_defeats(self):
@@ -172,6 +173,14 @@ class TestPlayer(unittest.TestCase):
         player.get_hand([SkullKingCard(), SuitCard(Suit.JollyRoger, 12), SuitCard(Suit.JollyRoger, 3), TigressCard(),\
                 EscapeCard(), EscapeCard(), SuitCard(Suit.Parrot, 5), EscapeCard()])
         self.assertEqual(player.make_bid(4, 8), 3)
+
+class TestTrick(unittest.TestCase):
+    def test_card_index_to_player_index(self):
+         trick = Trick([Player(), Player(), Player(), Player()], 2)
+         self.assertEqual(trick.card_index_to_player_index(0), 3)
+         self.assertEqual(trick.card_index_to_player_index(1), 0)
+         self.assertEqual(trick.card_index_to_player_index(2), 1)
+         self.assertEqual(trick.card_index_to_player_index(3), 2)
 
 if __name__ == '__main__':
     unittest.main()
