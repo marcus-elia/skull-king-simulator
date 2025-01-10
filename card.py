@@ -60,6 +60,15 @@ class Card(ABC):
     def defeats(self, other_card, trump_suit):
         if other_card.card_category == CardCategory.Suit:
             return self.defeats_suit_card(other_card, trump_suit)
+        else:
+            return self.defeats_no_trump(other_card)
+
+    def defeats_no_trump(self, other_card):
+        """
+        This version is when no trump suit has been determined.
+        """
+        if other_card.card_category == CardCategory.Suit:
+            return self.defeats_suit_card_no_trump(other_card)
         elif other_card.card_category == CardCategory.Pirate:
             return self.defeats_pirate()
         elif other_card.card_category == CardCategory.Mermaid:
@@ -102,6 +111,18 @@ class SuitCard(Card):
             # Comparing two non-trumps returns False? Shouldn't matter.
             return False
 
+    def defeats_suit_card_no_trump(self, other_card):
+        """
+        Comparison when there is no trump suit.
+        """
+        if other_card.suit == self.suit:
+            return self.number > other_card.number
+        elif self.suit == Suit.JollyRoger:
+            return True
+        else:
+            # If the cards are not the same and this is not a jolly roger.
+            return False
+
     def defeats_pirate(self):
         return False;
 
@@ -123,6 +144,9 @@ class SuitCard(Card):
 class PirateCard(Card):
     def __init__(self):
         super().__init__(CardCategory.Pirate)
+
+    def defeats_suit_card_no_trump(self, other_card):
+        return True
 
     def defeats_suit_card(self, other_card, trump_suit):
         return True
@@ -149,6 +173,9 @@ class MermaidCard(Card):
     def __init__(self):
         super().__init__(CardCategory.Mermaid)
 
+    def defeats_suit_card_no_trump(self, other_card):
+        return True
+
     def defeats_suit_card(self, other_card, trump_suit):
         return True
 
@@ -173,6 +200,9 @@ class MermaidCard(Card):
 class SkullKingCard(Card):
     def __init__(self):
         super().__init__(CardCategory.SkullKing)
+
+    def defeats_suit_card_no_trump(self, other_card):
+        return True
 
     def defeats_suit_card(self, other_card, trump_suit):
         return True
@@ -203,6 +233,9 @@ class TigressCard(Card):
     def escape(self):
         self.tigress_mode = TigressMode.Escape
 
+    def defeats_suit_card_no_trump(self, other_card):
+        return self.tigress_mode == TigressMode.Pirate
+
     def defeats_suit_card(self, other_card, trump_suit):
         return self.tigress_mode == TigressMode.Pirate
 
@@ -228,6 +261,9 @@ class EscapeCard(Card):
     def __init__(self):
         super().__init__(CardCategory.Escape)
   
+    def defeats_suit_card_no_trump(self, other_card):
+        return False
+
     def defeats_suit_card(self, other_card, trump_suit):
         return False
 
