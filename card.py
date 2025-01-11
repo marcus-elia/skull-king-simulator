@@ -92,6 +92,9 @@ class SuitCard(Card):
         super().__init__(CardCategory.Suit)
         self.suit = suit
         self.number = number
+        self.power = self.number
+        if self.suit == Suit.JollyRoger:
+            self.power += 14
 
     def defeats_suit_card(self, other_card, trump_suit):
         """
@@ -144,6 +147,7 @@ class SuitCard(Card):
 class PirateCard(Card):
     def __init__(self):
         super().__init__(CardCategory.Pirate)
+        self.power = 30
 
     def defeats_suit_card_no_trump(self, other_card):
         return True
@@ -172,6 +176,7 @@ class PirateCard(Card):
 class MermaidCard(Card):
     def __init__(self):
         super().__init__(CardCategory.Mermaid)
+        self.power = 29
 
     def defeats_suit_card_no_trump(self, other_card):
         return True
@@ -200,6 +205,7 @@ class MermaidCard(Card):
 class SkullKingCard(Card):
     def __init__(self):
         super().__init__(CardCategory.SkullKing)
+        self.power = 31
 
     def defeats_suit_card_no_trump(self, other_card):
         return True
@@ -229,9 +235,11 @@ class TigressCard(Card):
     def __init__(self):
         super().__init__(CardCategory.Tigress)
         self.tigress_mode = TigressMode.Pirate
+        self.power = 30
  
     def escape(self):
         self.tigress_mode = TigressMode.Escape
+        self.power = 0
 
     def defeats_suit_card_no_trump(self, other_card):
         return self.tigress_mode == TigressMode.Pirate
@@ -260,6 +268,7 @@ class TigressCard(Card):
 class EscapeCard(Card):
     def __init__(self):
         super().__init__(CardCategory.Escape)
+        self.power = 0
   
     def defeats_suit_card_no_trump(self, other_card):
         return False

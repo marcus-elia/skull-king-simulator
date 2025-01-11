@@ -8,6 +8,38 @@ from player import *
 from trick import *
 
 class TestCards(unittest.TestCase):
+    def test_sorting_hand(self):
+        green1 = SuitCard(Suit.Parrot, 1)
+        yellow5 = SuitCard(Suit.TreasureMap, 5)
+        purple14 = SuitCard(Suit.TreasureChest, 14)
+        black1 = SuitCard(Suit.JollyRoger, 1)
+        black14 = SuitCard(Suit.JollyRoger, 14)
+        pirate = PirateCard()
+        mermaid = MermaidCard()
+        escape = EscapeCard()
+        skull_king = SkullKingCard()
+        tigress = TigressCard()
+        hand = [yellow5, tigress, black1, green1, pirate, skull_king, purple14, mermaid, escape, black14]
+        hand.sort(key=lambda x: x.power, reverse=False)
+        self.assertEqual(hand[0], escape)
+        self.assertEqual(hand[1], green1)
+        self.assertEqual(hand[2], yellow5)
+        self.assertEqual(hand[3], purple14)
+        self.assertEqual(hand[4], black1)
+        self.assertEqual(hand[5], black14)
+        self.assertEqual(hand[6], mermaid)
+        pirate_or_tigress_is_7th = (hand[7] == pirate or hand[7] == tigress)
+        self.assertTrue(pirate_or_tigress_is_7th)
+        pirate_or_tigress_is_8th = (hand[8] == pirate or hand[8] == tigress)
+        self.assertTrue(pirate_or_tigress_is_8th)
+        self.assertEqual(hand[9], skull_king)
+
+        # Make sure escape tigress is sorted correctly
+        tigress.escape()
+        hand.sort(key=lambda x: x.power, reverse=False)
+        tigress_is_0th_or_1st = (hand[0] == tigress or hand[1] == tigress)
+        self.assertTrue(tigress_is_0th_or_1st)
+
     def test_suit_card_defeats(self):
         green2 = SuitCard(Suit.Parrot, 2)
         # Compare to special cards
