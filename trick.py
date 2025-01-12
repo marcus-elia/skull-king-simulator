@@ -65,6 +65,14 @@ class Trick():
         """
         return (i - self.dealer_index + 1) % self.num_players
 
+    def would_win(self, card):
+        if len(self.cards_played) == 0:
+            return True
+        elif self.trump_suit != None:
+            return card.defeats_no_trump(self.current_winning_card)
+        else:
+            return card.defeats(self.current_winning_card, self.trump_suit)
+
     def play_card(self, card):
         self.cards_played.append(card)
         num_cards_played = len(self.cards_played)

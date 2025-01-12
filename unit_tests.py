@@ -218,6 +218,23 @@ class TestTrick(unittest.TestCase):
          self.assertEqual(trick.card_index_to_player_index(2), 1)
          self.assertEqual(trick.card_index_to_player_index(3), 2)
 
+    def test_would_win(self):
+        trick = Trick([Player(), Player(), Player(), Player()], 0)
+        green14 = SuitCard(Suit.Parrot, 14)
+        green10 = SuitCard(Suit.Parrot, 10)
+        green6 = SuitCard(Suit.Parrot, 6)
+        green2 = SuitCard(Suit.Parrot, 2)
+        yellow8 = SuitCard(Suit.TreasureChest, 8)
+        black1 = SuitCard(Suit.JollyRoger, 1)
+        trick.play_card(green6)
+        self.assertFalse(trick.would_win(green2))
+        self.assertFalse(trick.would_win(yellow8))
+        self.assertTrue(trick.would_win(green10))
+        self.assertTrue(trick.would_win(green14))
+        self.assertTrue(trick.would_win(black1))
+        trick.play_card(green14)
+        self.assertFalse(trick.would_win(green10))
+
     def test_play_card(self):
         trick = Trick([Player(), Player(), Player(), Player()], 0)
         green14 = SuitCard(Suit.Parrot, 14)
