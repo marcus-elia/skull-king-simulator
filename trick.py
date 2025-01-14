@@ -65,6 +65,9 @@ class Trick():
         """
         return (i - self.dealer_index + 1) % self.num_players
 
+    def violates_trump_suit(self, card):
+        return self.trump_suit != None and card.card_category == CardCategory.Suit and card.suit != self.trump_suit
+
     def would_win(self, card):
         if len(self.cards_played) == 0:
             return True
