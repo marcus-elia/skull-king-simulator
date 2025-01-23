@@ -76,6 +76,24 @@ class Trick():
         else:
             return card.defeats(self.current_winning_card, self.trump_suit)
 
+    def contains_mermaid(self):
+        for card in self.cards_played:
+            if card.card_category == CardCategory.Mermaid:
+                return True
+        return False
+
+    def contains_pirate(self):
+        for card in self.cards_played:
+            if card.is_pirate():
+                return True
+        return False
+
+    def contains_skull_king(self):
+        for card in self.cards_played:
+            if card.card_category == CardCategory.SkullKing:
+                return True
+        return False
+
     def play_card(self, card):
         self.cards_played.append(card)
         num_cards_played = len(self.cards_played)

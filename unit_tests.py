@@ -197,18 +197,134 @@ class TestPlayer(unittest.TestCase):
         player = Player()
         # Round one with a non-winning card
         player.get_hand([SuitCard(Suit.Parrot, 12)])
-        self.assertEqual(player.make_bid(4, 1), 0)
+        self.assertEqual(player.make_bid(4), 0)
         # Round one with a winning card
         player.get_hand([PirateCard()])
-        self.assertEqual(player.make_bid(4, 1), 1)
+        self.assertEqual(player.make_bid(4), 1)
         # Round 8 with 3 winners and 5 losers
         player.get_hand([PirateCard(), SkullKingCard(), MermaidCard(),\
                 EscapeCard(), EscapeCard(), SuitCard(Suit.Parrot, 5), EscapeCard(), SuitCard(Suit.TreasureMap, 2)])
-        self.assertEqual(player.make_bid(4, 8), 3)
+        self.assertEqual(player.make_bid(4), 3)
         # Round 8 with 1 winner and 3 maybes
         player.get_hand([SkullKingCard(), SuitCard(Suit.JollyRoger, 12), SuitCard(Suit.JollyRoger, 3), TigressCard(),\
                 EscapeCard(), EscapeCard(), SuitCard(Suit.Parrot, 5), EscapeCard()])
-        self.assertEqual(player.make_bid(4, 8), 3)
+        self.assertEqual(player.make_bid(4), 3)
+
+    def test_play_card_at_index(self):
+        player = Player()
+        trick = Trick([Player(), player, Player(), Player()], 0)
+        pirate = PirateCard()
+        green5 = SuitCard(Suit.Parrot, 5)
+        escape = EscapeCard()
+        player.get_hand([pirate, green5, escape])
+        player.determine_illegal_indices(trick)
+        self.assertEqual(player.hand[0], escape)
+        self.assertEqual(player.hand[1], green5)
+        self.assertEqual(player.hand[2], pirate)
+        player.play_card_at_index(1)
+        self.assertEqual(len(player.hand), 2)
+        self.assertEqual(player.hand[0], escape)
+        self.assertEqual(player.hand[1], pirate)
+        player.determine_illegal_indices(trick)
+        player.play_card_at_index(0)
+        self.assertEqual(len(player.hand), 1)
+        self.assertEqual(player.hand[0], pirate)
+
+    def test_contains_mermaid(self):
+        player = Player()
+        mermaid = MermaidCard()
+        green5 = SuitCard(Suit.Parrot, 5)
+        player.get_hand([mermaid, green5])
+        self.assertTrue(player.contains_mermaid())
+        player.get_hand([green5])
+        self.assertFalse(player.contains_mermaid())
+
+    def test_contains_pirate(self):
+        player = Player()
+        pirate = PirateCard()
+        tigress = TigressCard()
+        green5 = SuitCard(Suit.Parrot, 5)
+        player.get_hand([pirate, green5, tigress])
+        self.assertTrue(player.contains_pirate())
+        player.get_hand([green5, tigress])
+        self.assertTrue(player.contains_pirate())
+        player.get_hand([green5])
+        self.assertFalse(player.contains_pirate())
+
+    def test_contains_skull_king(self):
+        player = Player()
+        skull_king = SkullKingCard()
+        green5 = SuitCard(Suit.Parrot, 5)
+        player.get_hand([skull_king, green5])
+        self.assertTrue(player.contains_skull_king())
+        player.get_hand([green5])
+        self.assertFalse(player.contains_skull_king())
+
+    def test_can_follow_trump_suit(self):
+        player1 = Player()
+        player1.get_hand([SuitCard(Suit.Parrot, 5), EscapeCard(), PirateCard()])
+        # Can't follow suit due to not having trump suit
+        trick = Trick([Player(), player1, Player(), Player()], 0)
+        trick.play_card(SuitCard(Suit.TreasureChest, 14))
+        self.assertFalse(player1.can_follow_trump_suit(trick))
+        # Can follow suit
+        trick = Trick([Player(), player1, Player(), Player()], 0)
+        trick.play_card(SuitCard(Suit.Parrot, 14))
+        self.assertTrue(player1.can_follow_trump_suit(trick))
+        # Can't follow suit due to there not being a trump
+        trick = Trick([Player(), player1, Player(), Player()], 0)
+        trick.play_card(EscapeCard())
+        self.assertFalse(player1.can_follow_trump_suit(trick))
+
+    def test_determine_illegal_indices(self):
+        player1 = Player()
+        player1.get_hand([SuitCard(Suit.Parrot, 5), EscapeCard(), SuitCard(Suit.TreasureChest, 2), PirateCard(), SuitCard(Suit.JollyRoger, 5)])
+        # A yellow card is played, so can't play a green or black card
+        trick = Trick([Player(), player1, Player(), Player()], 0)
+        trick.play_card(SuitCard(Suit.TreasureChest, 14))
+        player1.determine_illegal_indices(trick)
+        self.assertEqual(player1.legal_index_holder.indices, [0, 1, 4])
+        # An escape is played, so any card is legal
+        trick = Trick([Player(), player1, Player(), Player()], 0)
+        trick.play_card(EscapeCard())
+        player1.determine_illegal_indices(trick)
+        self.assertEqual(player1.legal_index_holder.indices, [0, 1, 2, 3, 4])
+        # Black card is played, can't play green or yellow
+        trick = Trick([Player(), player1, Player(), Player()], 0)
+        trick.play_card(SuitCard(Suit.JollyRoger, 8))
+        player1.determine_illegal_indices(trick)
+        self.assertEqual(player1.legal_index_holder.indices, [0, 3, 4])
+
+    def test_play_random_card(self):
+        player1 = Player()
+        player1.get_hand([SuitCard(Suit.Parrot, 5), EscapeCard(), SuitCard(Suit.TreasureChest, 2), PirateCard(), SuitCard(Suit.JollyRoger, 5)])
+        trick = Trick([Player(), player1, Player(), Player()], 0)
+        player1.determine_illegal_indices(trick)
+        self.assertEqual(len(player1.hand), 5)
+        player1.play_random_card()
+        self.assertEqual(len(player1.hand), 4)
+
+    def test_play_leading_card(self):
+        player1 = Player()
+        trick = Trick([Player(), player1, Player(), Player()], 0)
+        green5 = SuitCard(Suit.Parrot, 5)
+        escape = EscapeCard()
+        yellow2 = SuitCard(Suit.TreasureChest, 2)
+        pirate = PirateCard()
+        black5 = SuitCard(Suit.JollyRoger, 5)
+        player1.get_hand([green5, escape, yellow2, pirate, black5])
+        player1.make_bid(4)
+        self.assertEqual(player1.bid, 1)
+        player1.determine_illegal_indices(trick)
+        card = player1.choose_leading_card(4)
+        self.assertEqual(card, green5)
+
+    def test_indices_of_potential_winning_cards(self):
+        player1 = Player()
+        player1.get_hand([SuitCard(Suit.Parrot, 5), EscapeCard(), SuitCard(Suit.TreasureChest, 2), PirateCard(), SuitCard(Suit.JollyRoger, 5)])
+        trick = Trick([Player(), player1, Player(), Player()], 3)
+        trick.play_card(SuitCard(Suit.Parrot, 6))
+        self.assertEqual(player1.indices_of_potential_winning_cards(trick), [3, 4])
 
 class TestTrick(unittest.TestCase):
     def test_card_index_to_player_index(self):

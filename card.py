@@ -87,6 +87,12 @@ class Card(ABC):
     def __str__(self):
         pass
 
+    def is_escape(self):
+        return self.card_category == CardCategory.Escape or (self.card_category == CardCategory.Tigress and self.tigress_mode == TigressMode.Escape)
+
+    def is_pirate(self):
+        return self.card_category == CardCategory.Pirate or (self.card_category == CardCategory.Tigress and self.tigress_mode == TigressMode.Pirate)
+
 class SuitCard(Card):
     def __init__(self, suit, number):
         super().__init__(CardCategory.Suit)
