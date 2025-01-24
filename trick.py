@@ -61,10 +61,10 @@ def bonus_points(cards_played, winning_card):
     return points
 
 class Trick():
-    def __init__(self, players, dealer_index):
+    def __init__(self, players, leading_player_index):
         self.players = players
         self.num_players = len(players)
-        self.dealer_index = dealer_index
+        self.leading_player_index = leading_player_index
         self.trump_suit = None
         self.no_trump = False # If a special card is the first non-escape played
         self.non_escape_has_been_played = False
@@ -77,7 +77,7 @@ class Trick():
         This figures out which player in the list of players
         played the ith card in the cards_played list.
         """
-        return (i - self.dealer_index + 1) % self.num_players
+        return (i + self.leading_player_index) % self.num_players
 
     def violates_trump_suit(self, card):
         return self.trump_suit != None and card.card_category == CardCategory.Suit and card.suit != self.trump_suit

@@ -58,8 +58,11 @@ class Game():
         tricks_won = [[] for _ in range(self.num_players)]
 
         # Do all of the tricks
+        leading_player_index = (self.dealer_index + 1) % self.num_players # who leads each trick
         for r in range(round_number):
-            trick = Trick(self.players, self.dealer_index)
+            if self.print_trick_results:
+                print("Player %d is leading the trick." % (leading_player_index))
+            trick = Trick(self.players, leading_player_index)
             for i in range(self.num_players):
                 player_index = trick.card_index_to_player_index(i)
                 if self.print_hands_before_playing:
@@ -72,7 +75,9 @@ class Game():
             winning_player_index = trick.card_index_to_player_index(trick.current_winning_index)
             if self.print_trick_results:
                 print("Player %d wins trick %d." % (winning_player_index, r))
+                print("-------------------------------")
             tricks_won[winning_player_index].append((trick.cards_played, trick.current_winning_card))
+            leading_player_index = winning_player_index # update who leads the next trick
 
         # Give out points
         points = points_from_round(self.players, bids, tricks_won, round_number)
@@ -80,6 +85,7 @@ class Game():
             self.scores[i] += points[i]
             if self.print_scores_each_round:
                 print("Player %d won %d tricks, scoring %d points, and now has %d." % (i, len(tricks_won[i]), points[i], self.players[i].score))
+                print("======================================")
 
         # Update the dealer
         self.dealer_index += 1

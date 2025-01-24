@@ -328,7 +328,7 @@ class TestPlayer(unittest.TestCase):
 
 class TestTrick(unittest.TestCase):
     def test_card_index_to_player_index(self):
-         trick = Trick([Player(), Player(), Player(), Player()], 2)
+         trick = Trick([Player(), Player(), Player(), Player()], 3)
          self.assertEqual(trick.card_index_to_player_index(0), 3)
          self.assertEqual(trick.card_index_to_player_index(1), 0)
          self.assertEqual(trick.card_index_to_player_index(2), 1)
