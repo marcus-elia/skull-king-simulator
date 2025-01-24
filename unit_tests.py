@@ -603,5 +603,23 @@ class TestTrick(unittest.TestCase):
         self.assertEqual(trick.current_winning_card, mermaid)
         self.assertEqual(trick.current_winning_index, 3)
 
+    def test_bonus_points(self):
+        trick = Trick([Player(), Player(), Player(), Player()], 0)
+        trick.play_card(SuitCard(Suit.Parrot, 2))
+        trick.play_card(SuitCard(Suit.TreasureChest, 13))
+        self.assertEqual(bonus_points(trick.cards_played, trick.current_winning_card), 0)
+        trick.play_card(SuitCard(Suit.Parrot, 14))
+        self.assertEqual(bonus_points(trick.cards_played, trick.current_winning_card), 10)
+        trick.play_card(SuitCard(Suit.JollyRoger, 14))
+        self.assertEqual(bonus_points(trick.cards_played, trick.current_winning_card), 30)
+        trick.play_card(MermaidCard())
+        self.assertEqual(bonus_points(trick.cards_played, trick.current_winning_card), 30)
+        trick.play_card(PirateCard())
+        self.assertEqual(bonus_points(trick.cards_played, trick.current_winning_card), 50)
+        trick.play_card(SkullKingCard())
+        self.assertEqual(bonus_points(trick.cards_played, trick.current_winning_card), 60)
+        trick.play_card(MermaidCard())
+        self.assertEqual(bonus_points(trick.cards_played, trick.current_winning_card), 70)
+
 if __name__ == '__main__':
     unittest.main()

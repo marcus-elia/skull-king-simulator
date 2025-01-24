@@ -45,6 +45,20 @@ def determine_winning_index(cards):
                 trump_suit
     trump_suit = None
 
+def bonus_points(cards_played, winning_card):
+    points = 0
+    for card in cards_played:
+        if card.card_category == CardCategory.Suit and card.number == 14:
+            points += 10
+            if card.suit == Suit.JollyRoger:
+                points += 10
+        elif card.is_pirate() and winning_card.card_category == CardCategory.SkullKing:
+            points += 30
+        elif card.card_category == CardCategory.Mermaid and winning_card.is_pirate():
+            points += 20
+        elif card.card_category == CardCategory.SkullKing and winning_card.card_category == CardCategory.Mermaid:
+            points += 40
+    return points
 
 class Trick():
     def __init__(self, players, dealer_index):

@@ -61,8 +61,10 @@ class Player():
         if num_tricks == 1:
             winning_chances = evaluate_winning_chances(self.hand[0])
             if winning_chances == WinningChances.High or winning_chances == WinningChances.Likely:
+                self.bid = 1
                 return 1
             else:
+                self.bid = 0
                 return 0
         expected_wins = 0
         for card in self.hand:
@@ -220,6 +222,13 @@ class Player():
         elif trick.contains_skull_king() and self.contains_mermaid():
             return self.play_mermaid()
         elif self.can_win(trick):
-            return self.play_weakest_winning_card()
+            return self.play_weakest_winning_card(trick)
         else:
             return self.play_weakest_card()
+
+    def print_hand(self):
+        s = '['
+        for card in self.hand:
+            s += str(card)
+            s += ', '
+        return s[:(len(s) - 2)] + ']'
