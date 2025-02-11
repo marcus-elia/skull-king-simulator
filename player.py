@@ -50,6 +50,7 @@ class Player():
         self.legal_index_holder = LegalIndexHolder()
 
     def get_hand(self, hand):
+        self.tricks_won = 0
         self.hand = hand
         self.sort_hand()
 
@@ -66,25 +67,38 @@ class Player():
             else:
                 self.bid = 0
                 return 0
-        expected_wins = 0
-        for card in self.hand:
-            winning_chances = evaluate_winning_chances(card)
-            if winning_chances == WinningChances.High:
-                expected_wins += 1
-            elif winning_chances == WinningChances.Likely:
-                expected_wins += 0.7
-            elif winning_chances == WinningChances.Possible:
-                expected_wins += 0.4
-            elif winning_chances == WinningChances.Unlikely:
-                expected_wins += 0.2
-            else:
-                expected_wins += 0
-        tricks_per_player = num_tricks / num_players
-        if round(expected_wins) - round(tricks_per_player) > 2:
-            self.bid = int(round(expected_wins) - 1)
-        self.bid = int(round(expected_wins))
-
+        else:
+            expected_wins = 0
+            for card in self.hand:
+                winning_chances = evaluate_winning_chances(card)
+                if winning_chances == WinningChances.High:
+                    expected_wins += 1
+                elif winning_chances == WinningChances.Likely:
+                    expected_wins += 0.7
+                elif winning_chances == WinningChances.Possible:
+                    expected_wins += 0.4
+                elif winning_chances == WinningChances.Unlikely:
+                    expected_wins += 0.2
+                else:
+                    expected_wins += 0
+            tricks_per_player = num_tricks / num_players
+            if round(expected_wins) - round(tricks_per_player) > 2:
+                self.bid = int(round(expected_wins) - 1)
+            self.bid = int(round(expected_wins))
+        
+        if self.bid == 0:
+            self.make_tigress_escape()
         return self.bid
+
+    def win_trick(self):
+        self.tricks_won += 1
+        if self.tricks_won >= self.bid:
+            self.make_tigress_escape()
+
+    def make_tigress_escape(self):
+        for card in self.hand:
+            if card.card_category == CardCategory.Tigress:
+                card.escape()
 
     def contains_mermaid(self):
         for card in self.hand:
