@@ -94,7 +94,7 @@ class Game():
             if self.print_scores_each_round:
                 print("Player %d won %d tricks, scoring %d points, and now has %d." % (i, len(tricks_won[i]), points[i], self.players[i].score))
                 print("======================================")
-        self.game_writer.add_scores(round_number, self.scores)
+        self.game_writer.add_scores(round_number, list(self.scores))
 
         # Update the dealer
         self.dealer_index += 1

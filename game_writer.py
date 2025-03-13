@@ -17,6 +17,11 @@ BIDS_KEY = "bids"
 HANDS_KEY = "hands"
 TRICKS_KEY = "tricks"
 
+def hand_to_card_strings(hand):
+    return [str(card) for card in hand]
+def hands_to_card_strings_lists(hands):
+    return [hand_to_card_strings(hand) for hand in hands]
+
 class GameWriter():
     def __init__(self):
         self.data = [{TRICKS_KEY : []} for _ in range(1, 11)]
@@ -25,10 +30,10 @@ class GameWriter():
         self.data[round_number - 1][BIDS_KEY] = bids
 
     def add_hands(self, round_number, hands):
-        self.data[round_number - 1][HANDS_KEY] = hands
+        self.data[round_number - 1][HANDS_KEY] = hands_to_card_strings_lists(hands)
 
     def add_trick(self, round_number, starting_index, hands, cards_played, winner_index):
-        self.data[round_number - 1][TRICKS_KEY].append({"starting_index" : starting_index, "hands" : hands, "cards_played" : cards_played, "winner_index" : winner_index})
+        self.data[round_number - 1][TRICKS_KEY].append({"starting_index" : starting_index, "hands" : hands_to_card_strings_lists(hands), "cards_played" : hand_to_card_strings(cards_played), "winner_index" : winner_index})
 
     def add_scores(self, round_number, scores):
         self.data[round_number - 1]["scores"] = scores
