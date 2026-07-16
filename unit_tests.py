@@ -615,9 +615,10 @@ class TestTrick(unittest.TestCase):
         trick.play_card(MermaidCard())
         self.assertEqual(bonus_points(trick.cards_played, trick.current_winning_card), 30)
         trick.play_card(PirateCard())
+        trick.play_card(TigressCard())
         self.assertEqual(bonus_points(trick.cards_played, trick.current_winning_card), 50)
         trick.play_card(SkullKingCard())
-        self.assertEqual(bonus_points(trick.cards_played, trick.current_winning_card), 60)
+        self.assertEqual(bonus_points(trick.cards_played, trick.current_winning_card), 90)
         trick.play_card(MermaidCard())
         self.assertEqual(bonus_points(trick.cards_played, trick.current_winning_card), 70)
 

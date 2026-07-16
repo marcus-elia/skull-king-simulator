@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import tkinter as tk
 
 from deck import *
 from game_writer import GameWriter
@@ -30,12 +31,14 @@ def points_from_round(players, bids, tricks_won, round_number):
     return points_per_player
 
 class Game():
-    def __init__(self, num_players, print_bids, print_trick_results, print_dealer, print_scores_each_round, print_played_cards, print_hands_before_playing):
+    def __init__(self, num_players, display, print_bids, print_trick_results, print_dealer, print_scores_each_round, print_played_cards, print_hands_before_playing):
         self.deck = Deck(shuffle=True)
         self.num_players = num_players
         self.players = [Player() for _ in range(num_players)]
         self.dealer_index = 0
         self.scores = [0 for _ in range(num_players)]
+        self.display = display
+        self.status_string = "Starting game."
         self.print_bids = print_bids
         self.print_trick_results = print_trick_results
         self.print_dealer = print_dealer
@@ -43,6 +46,31 @@ class Game():
         self.print_played_cards = print_played_cards
         self.print_hands_before_playing = print_hands_before_playing
         self.game_writer = GameWriter()
+
+    def draw(self):
+        w = 600
+        h = 400
+        root = tk.Tk()
+        root.title(self.status_string)
+        root.geometry("600x400")
+
+        def close_window(event):
+            root.destroy()
+
+        canvas = tk.Canvas(root, width=w, height=h, bg="white")
+        canvas.pack(fill=tk.BOTH, expand=True)
+
+        start_x = 0
+        player_draw_size = w / self.num_players
+        start_y = h - player_draw_size
+        for player in self.players:
+            player.draw(canvas, start_x, start_y, player_draw_size)
+            canvas.create_rectangle(start_x, start_y, start_x + player_draw_size, start_y + player_draw_size, fill=None, outline="black")
+            start_x += w / self.num_players
+
+        canvas.create_rectangle(200, 100, 350, 250, fill="", outline="red", width=3)
+        root.bind("<space>", close_window)
+        root.mainloop()
 
     def play_round(self, round_number):
         # Deal the cards and have players make bids
@@ -58,7 +86,10 @@ class Game():
         self.game_writer.add_bids(round_number, bids)
         if self.print_bids:
             for i in range(len(bids)):
-                print("Player %d bids %d (%s)." % (i, bids[i], self.players[i].print_hand()))
+                self.status_string = "Player %d bids %d (%s)." % (i, bids[i], self.players[i].print_hand())
+                print(self.status_string)
+                if self.display:
+                    self.draw()
         # Corresponding to each player, we have a list of tuples (trick, winning card) representing tricks that player won
         tricks_won = [[] for _ in range(self.num_players)]
 
@@ -111,6 +142,7 @@ class Game():
 def main():
     parser = argparse.ArgumentParser(description="Run a full 10-round skull king with only computer players.")
     parser.add_argument("-n", "--num-players", type=int, required=True, help="How many players the game has")
+    parser.add_argument("--display", action='store_true', help="Display things in a graphics window")
     parser.add_argument("--print-all", action='store_true', help="Print all of the following")
     parser.add_argument("--print-bids", action='store_true', help="Print the bids at the start of each trick")
     parser.add_argument("--print-trick-results", action='store_true', help="Print the results of each trick")
@@ -122,7 +154,7 @@ def main():
 
     args = parser.parse_args()
 
-    game = Game(args.num_players,\
+    game = Game(args.num_players, args.display,\
             args.print_bids or args.print_all,\
             args.print_trick_results or args.print_all,\
             args.print_dealer or args.print_all,\

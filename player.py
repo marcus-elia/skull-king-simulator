@@ -49,6 +49,13 @@ class Player():
         self.tricks_won = 0
         self.legal_index_holder = LegalIndexHolder()
 
+    def draw(self, canvas, start_x, start_y, draw_size):
+        card_width = draw_size / (len(self.hand)/1.75 + 2)
+        card_start_x = start_x + card_width
+        for card in self.hand:
+            card.draw(canvas, card_start_x, start_y, card_start_x + card_width, start_y + draw_size)
+            card_start_x += card_width / 2
+
     def get_hand(self, hand):
         self.tricks_won = 0
         self.hand = hand

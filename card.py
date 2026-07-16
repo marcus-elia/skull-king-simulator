@@ -2,6 +2,7 @@
 
 from abc import ABC, abstractmethod
 from enum import Enum
+import tkinter as tk
 
 class CardCategory(Enum):
     Suit = 1
@@ -32,6 +33,10 @@ class Card(ABC):
         self.card_category = card_category
         self.id_number = Card.current_id_number
         Card.current_id_number += 1
+
+    @abstractmethod
+    def draw(self, canvas, start_x, start_y, end_x, end_y):
+        pass
 
     @abstractmethod
     def defeats_suit_card(self, other_card, trump_suit):
@@ -102,6 +107,23 @@ class SuitCard(Card):
         if self.suit == Suit.JollyRoger:
             self.power += 14
 
+    def draw(self, canvas, start_x, start_y, end_x, end_y):
+        if self.suit == Suit.JollyRoger:
+            color = "black"
+            text_color = "white"
+        elif self.suit == Suit.Parrot:
+            color = "green"
+            text_color = "white"
+        elif self.suit == Suit.TreasureMap:
+            color = "purple"
+            text_color = "white"
+        else:
+            color = "yellow"
+            text_color = "black"
+        text_size = (end_x - start_x) / 2
+        canvas.create_rectangle(start_x, start_y, end_x, end_y, fill=color, outline="gray")
+        canvas.create_text(start_x + text_size / 2, start_y + text_size / 2, text=str(self.number), fill=text_color, font=("Arial", -int(text_size), "bold"), anchor=tk.CENTER)
+
     def defeats_suit_card(self, other_card, trump_suit):
         """
         Be careful of the order here. Must do both of these:
@@ -155,6 +177,11 @@ class PirateCard(Card):
         super().__init__(CardCategory.Pirate)
         self.power = 30
 
+    def draw(self, canvas, start_x, start_y, end_x, end_y):
+        text_size = (end_x - start_x) / 2
+        canvas.create_rectangle(start_x, start_y, end_x, end_y, fill="red", outline="gray")
+        canvas.create_text(start_x + text_size / 2, start_y + text_size / 2, text="P", fill="black", font=("Arial", -int(text_size), "bold"), anchor=tk.CENTER)
+
     def defeats_suit_card_no_trump(self, other_card):
         return True
 
@@ -184,6 +211,11 @@ class MermaidCard(Card):
         super().__init__(CardCategory.Mermaid)
         self.power = 29
 
+    def draw(self, canvas, start_x, start_y, end_x, end_y):
+        text_size = (end_x - start_x) / 2
+        canvas.create_rectangle(start_x, start_y, end_x, end_y, fill="deep sky blue", outline="white")
+        canvas.create_text(start_x + text_size / 2, start_y + text_size / 2, text="M", fill="black", font=("Arial", -int(text_size), "bold"), anchor=tk.CENTER)
+
     def defeats_suit_card_no_trump(self, other_card):
         return True
 
@@ -212,6 +244,11 @@ class SkullKingCard(Card):
     def __init__(self):
         super().__init__(CardCategory.SkullKing)
         self.power = 31
+
+    def draw(self, canvas, start_x, start_y, end_x, end_y):
+        text_size = (end_x - start_x) / 2
+        canvas.create_rectangle(start_x, start_y, end_x, end_y, fill="black", outline="gold")
+        canvas.create_text(start_x + text_size / 2, start_y + text_size / 2, text="SK", fill="gold", font=("Arial", -int(text_size), "bold"), anchor=tk.CENTER)
 
     def defeats_suit_card_no_trump(self, other_card):
         return True
@@ -243,6 +280,11 @@ class TigressCard(Card):
         self.tigress_mode = TigressMode.Pirate
         self.power = 30
  
+    def draw(self, canvas, start_x, start_y, end_x, end_y):
+        text_size = (end_x - start_x) / 2
+        canvas.create_rectangle(start_x, start_y, end_x, end_y, fill="red", outline="gray")
+        canvas.create_text(start_x + text_size / 2, start_y + text_size / 2, text="T", fill="white", font=("Arial", -int(text_size), "bold"), anchor=tk.CENTER)
+
     def escape(self):
         self.tigress_mode = TigressMode.Escape
         self.power = 0
@@ -276,6 +318,11 @@ class EscapeCard(Card):
         super().__init__(CardCategory.Escape)
         self.power = 0
   
+    def draw(self, canvas, start_x, start_y, end_x, end_y):
+        text_size = (end_x - start_x) / 2
+        canvas.create_rectangle(start_x, start_y, end_x, end_y, fill="white", outline="gray")
+        canvas.create_text(start_x + text_size / 2, start_y + text_size / 2, text="E", fill="gray", font=("Arial", -int(text_size), "bold"), anchor=tk.CENTER)
+
     def defeats_suit_card_no_trump(self, other_card):
         return False
 
